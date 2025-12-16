@@ -44,5 +44,16 @@ RUN a2dismod mpm_event || true && a2enmod mpm_prefork || true
 
 # Pastikan hanya satu MPM aktif: nonaktifkan mpm_event, aktifkan mpm_prefork
 RUN a2dismod mpm_event || true && a2enmod mpm_prefork || true
-
+# Pastikan hanya satu MPM aktif: nonaktifkan event/worker, hapus symlink bila ada, aktifkan prefork
+RUN set -eux; \
+    # coba nonaktifkan modul (tidak error jika tidak ada)
+    a2dismod mpm_event || true; \
+    a2dismod mpm_worker || true; \
+    # hapus symlink file modul jika masih ada
+    rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf || true; \
+    rm -f /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf || true; \
+    # aktifkan prefork
+    a2enmod mpm_prefork || true; \
+    # debug: tampilkan modul yang aktif di build log
+    echo "=== apache mods-enabled ==="; ls -la /etc/apache2/mods-enabled; echo "=== end ==="
 # (lanjutkan langkah lain seperti COPY, chown, dll.)
