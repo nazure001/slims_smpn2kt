@@ -32,3 +32,15 @@ EXPOSE 80
 
 # Start Apache in foreground
 CMD ["apache2-foreground"]
+# ... bagian sebelumnya (instal deps & extensions)
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    libzip-dev zip unzip git libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev \
+    libonig-dev libicu-dev zlib1g-dev g++ \
+  && docker-php-ext-configure gd --with-jpeg --with-freetype \
+  && docker-php-ext-install -j$(nproc) pdo pdo_mysql mysqli mbstring zip xml gd intl \
+  && a2enmod rewrite headers expires
+
+# Pastikan hanya satu MPM aktif: nonaktifkan mpm_event, aktifkan mpm_prefork
+RUN a2dismod mpm_event || true && a2enmod mpm_prefork || true
+
+# (lanjutkan langkah lain seperti COPY, chown, dll.)
