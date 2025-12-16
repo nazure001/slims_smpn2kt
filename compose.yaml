@@ -1,0 +1,6 @@
+services:
+  slimssmpn2kt:
+    image: slimssmpn2kt
+    build:
+      context: .
+      dockerfile: ./Dockerfile
