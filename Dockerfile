@@ -7,6 +7,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   && docker-php-ext-configure gd --with-jpeg --with-freetype \
   && docker-php-ext-install -j$(nproc) pdo pdo_mysql mysqli mbstring zip xml gd intl \
   && a2enmod rewrite headers expires
+RUN a2dismod mpm_event || true && a2enmod mpm_prefork || true
 
 # Copy only needed files (use .dockerignore to speed up)
 # Project's webroot in this repo is under httpd/htdocs/ (as in XAMPP)
@@ -39,6 +40,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   && docker-php-ext-configure gd --with-jpeg --with-freetype \
   && docker-php-ext-install -j$(nproc) pdo pdo_mysql mysqli mbstring zip xml gd intl \
   && a2enmod rewrite headers expires
+RUN a2dismod mpm_event || true && a2enmod mpm_prefork || true
 
 # Pastikan hanya satu MPM aktif: nonaktifkan mpm_event, aktifkan mpm_prefork
 RUN a2dismod mpm_event || true && a2enmod mpm_prefork || true
